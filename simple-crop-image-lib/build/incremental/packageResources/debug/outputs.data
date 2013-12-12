@@ -1,0 +1,15 @@
+# incremental data. DO NOT EDIT.
+# format is <lastModified> <length> <SHA-1> <path>
+# Encoding is UTF-8
+1386859505000 945 9d4f019105495d5829e1207a2892a3034087abad /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable-xhdpi/ic_rotate_left.png
+1386859505000 2199 0f309e2b581c0c046af1cf013d76ebc7624215f5 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable-xhdpi/btn_crop_pressed.9.png
+1386859505000 556 66733bfc7013d5c77f40eb20f3449fab0e2d6d32 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/values-cs/values.xml
+1386859505000 2085 937868c035ff98144a4fa0075971d7451acce024 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable-xhdpi/camera_crop_width.png
+1386859505000 1150 50fde3bd004e0f3ce31fcba12c0170793e4bd466 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/values/values.xml
+1386859505000 3225 e381e50d16157fc585fd5f21c959e3608c2e598e /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable-xhdpi/indicator_autocrop.png
+1386859505000 2100 a96c63a0d37e0a3e5ee696a0aa95a84512778e30 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable-xhdpi/camera_crop_height.png
+1386859505000 2249 fa00ab044eebd78508b18c8e27a8419b092319eb /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable-xhdpi/btn_crop_operator.9.png
+1386859505000 580 20f4ad8396550c5cee6cbe9ef127874f7340e4f3 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/layout/main.xml
+1386859505000 931 47c74d714d51945b33063a33a0a8a042e8a17751 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable-xhdpi/ic_rotate_right.png
+1386859505000 689 e9c0bfb985d2a6b64c65ffd7e642d95eeba9cffd /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/drawable/selector_crop_button.xml
+1386859505000 2357 09616487b999ca5bbb7b80f0fd5411f29b4051d4 /Users/jan/znappu_android/ZnappuProject/cropimage/simple-crop-image-lib/build/bundles/debug/res/layout/cropimage.xml
