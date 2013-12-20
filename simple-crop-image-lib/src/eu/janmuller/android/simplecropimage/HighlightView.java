@@ -17,8 +17,15 @@
 package eu.janmuller.android.simplecropimage;
 
 
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 // This class is used by CropImage to display a highlighted cropping rectangle
@@ -87,7 +94,7 @@ class HighlightView {
             mContext.getDrawingRect(viewDrawingRect);
             if (mCircle) {
 				
-		canvas.save();
+		        canvas.save();
 
                 float width = mDrawRect.width();
                 float height = mDrawRect.height();
@@ -97,39 +104,38 @@ class HighlightView {
                         Path.Direction.CW);
 				mOutlinePaint.setColor(0xFFEF04D6);
                 
-		canvas.clipPath(path, Region.Op.DIFFERENCE);
+		        canvas.clipPath(path, Region.Op.DIFFERENCE);
             	canvas.drawRect(viewDrawingRect,
                     hasFocus() ? mFocusPaint : mNoFocusPaint);
 
             	canvas.restore();
-
-
             } else {
-				
-		Rect topRect = new Rect(viewDrawingRect.left, viewDrawingRect.top, viewDrawingRect.right, mDrawRect.top );
-	        if (topRect.width() > 0 && topRect.height() > 0) {
-	        	canvas.drawRect(topRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
-            	}
-	        Rect bottomRect = new Rect(viewDrawingRect.left, mDrawRect.bottom, viewDrawingRect.right, viewDrawingRect.bottom);
-	        if (bottomRect.width() > 0 && bottomRect.height() > 0) {
-	        	canvas.drawRect(bottomRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
-            	}
-            	Rect leftRect = new Rect(viewDrawingRect.left, topRect.bottom, mDrawRect.left, bottomRect.top);
-	        if (leftRect.width() > 0 && leftRect.height() > 0) {
-	        	canvas.drawRect(leftRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
-    		}
-            	Rect rightRect = new Rect(mDrawRect.right, topRect.bottom, viewDrawingRect.right, bottomRect.top);
-	        if (rightRect.width() > 0 && rightRect.height() > 0) {
-	                canvas.drawRect(rightRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
-	        }
+
+                Rect topRect = new Rect(viewDrawingRect.left, viewDrawingRect.top, viewDrawingRect.right, mDrawRect.top );
+                if (topRect.width() > 0 && topRect.height() > 0) {
+                    canvas.drawRect(topRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
+                }
+
+                Rect bottomRect = new Rect(viewDrawingRect.left, mDrawRect.bottom, viewDrawingRect.right, viewDrawingRect.bottom);
+                if (bottomRect.width() > 0 && bottomRect.height() > 0) {
+                    canvas.drawRect(bottomRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
+                }
+
+                Rect leftRect = new Rect(viewDrawingRect.left, topRect.bottom, mDrawRect.left, bottomRect.top);
+                if (leftRect.width() > 0 && leftRect.height() > 0) {
+                    canvas.drawRect(leftRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
+                }
+
+                Rect rightRect = new Rect(mDrawRect.right, topRect.bottom, viewDrawingRect.right, bottomRect.top);
+                if (rightRect.width() > 0 && rightRect.height() > 0) {
+                    canvas.drawRect(rightRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
+                }
 
                 path.addRect(new RectF(mDrawRect), Path.Direction.CW);
-            
-		mOutlinePaint.setColor(0xFFFF8A00);    
 
+                mOutlinePaint.setColor(0xFFFF8A00);
             }
-            
-			
+
             canvas.drawPath(path, mOutlinePaint);
 
             if (mMode == ModifyMode.Grow) {
@@ -299,7 +305,7 @@ class HighlightView {
         }
     }
 
-    // Grows the cropping rectange by (dx, dy) in image space.
+    // Moves the cropping rectange by (dx, dy) in image space.
     void moveBy(float dx, float dy) {
 
         Rect invalRect = new Rect(mDrawRect);
@@ -321,8 +327,10 @@ class HighlightView {
         mContext.invalidate(invalRect);
     }
 
-    // Grows the cropping rectange by (dx, dy) in image space.
+    // Grows the cropping rectange by (dx, dy) in image space. (Grow can also shrink)
     void growBy(float dx, float dy) {
+
+        Log.d(TAG, "growBy -  dx: " + dx + " dy: " + dy);
 
         if (mMaintainAspectRatio) {
             if (dx != 0) {
@@ -336,6 +344,7 @@ class HighlightView {
         // Grow at most half of the difference between the image rectangle and
         // the cropping rectangle.
         RectF r = new RectF(mCropRect);
+        Log.d(TAG, "rect width: " + r.width() + " height: " + r.height());
         if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
             float adjustment = (mImageRect.width() - r.width()) / 2F;
             dx = adjustment;
@@ -353,8 +362,13 @@ class HighlightView {
 
         r.inset(-dx, -dy);
 
-        // Don't let the cropping rectangle shrink too fast.
-        final float widthCap = 25F;
+        /// Det är här vi skall mickla med storleken
+        final int minPixels= 640;
+        final float minDelta = Math.max (0, r.width() - minPixels);
+        Log.d(TAG, "minDelta: " + minDelta);
+
+        final float widthCap = 640; // Min Cropping rectangle size;
+        Log.d(TAG, "widthCap: " + widthCap);
         if (r.width() < widthCap) {
             r.inset(-(widthCap - r.width()) / 2F, 0F);
         }
