@@ -73,6 +73,9 @@ public class CropImage extends MonitoredActivity {
     public static final  String RETURN_DATA_AS_BITMAP  = "data";
     public static final  String ACTION_INLINE_DATA     = "inline-data";
 
+    public static final String PICK_RECT_SIZE = "pick-rect-size"; // The size (width) of the crop rectangle.
+                                                                  // The height is calculated with aspect ratio
+
     // These are various options can be specified in the intent.
     private       Bitmap.CompressFormat mOutputFormat    = Bitmap.CompressFormat.JPEG;
     private       Uri                   mSaveUri         = null;
@@ -85,7 +88,10 @@ public class CropImage extends MonitoredActivity {
     private int             mAspectY = 1;
     private int             mOutputX;
     private int             mOutputY;
+
     private boolean         mScale;
+
+    private float           mPickRectSize = 25;
 
     private CropImageView   mImageView;
     private ContentResolver mContentResolver;
@@ -96,7 +102,7 @@ public class CropImage extends MonitoredActivity {
     boolean       mSaving;  // Whether the "save" button is already clicked.
     HighlightView mCrop;
 
-    // These options specifiy the output image size and whether we should
+    // These options specify the output image size and whether we should
     // scale the output to fit it (or just crop it).
     private boolean mScaleUp = true;
 
@@ -123,7 +129,6 @@ public class CropImage extends MonitoredActivity {
 
         showStorageToast(this);
 
-
         final Intent intent = getIntent();
         final Bundle extras = intent.getExtras();
         if (null == extras) {
@@ -132,7 +137,6 @@ public class CropImage extends MonitoredActivity {
             return;
         }
 
-
         mImagePath = extras.getString(IMAGE_PATH);
         if (null == mImagePath) {
             Log.w(TAG, "IMAGE_PATH needs to specify a path");
@@ -140,7 +144,7 @@ public class CropImage extends MonitoredActivity {
             return;
         }
 
-        mSaveUri = getImageUri(mImagePath); // Probably we need a different out path base don SO wisdom
+        mSaveUri = getImageUri(mImagePath); // TODO: Probably we need a different out path base don SO wisdom
         mBitmap = getBitmap(mImagePath);
         if (mBitmap == null) {
             Log.w(TAG, "IMAGE_PATH " + mImagePath + "does not point to an image");
@@ -159,7 +163,7 @@ public class CropImage extends MonitoredActivity {
             if (extras.get(ASPECT_X) instanceof Integer) {
                 mAspectX = extras.getInt(ASPECT_X);
             } else {
-                throw new IllegalArgumentException("ASPECT_X not an integer");
+                throw new IllegalArgumentException("ASPECT_X not an Integer");
             }
         }
 
@@ -167,14 +171,28 @@ public class CropImage extends MonitoredActivity {
             if (extras.get(ASPECT_Y) instanceof Integer) {
                 mAspectY = extras.getInt(ASPECT_Y);
             } else {
-                throw new IllegalArgumentException("ASPECT_Y not an integer");
+                throw new IllegalArgumentException("ASPECT_Y not an Integer");
             }
         }
+
+        if (extras.containsKey(PICK_RECT_SIZE)) {
+            if (extras.get(PICK_RECT_SIZE) instanceof Float) {
+                mPickRectSize = extras.getFloat(PICK_RECT_SIZE);
+            } else {
+                throw new IllegalArgumentException("PICK_RECT_SIZE not a Float");
+            }
+            if (mPickRectSize < 25) {
+                throw new IllegalArgumentException("PICK_RECT_SIZE must not be smaller that 25");
+            }
+        }
+
 
         mOutputX = extras.getInt(OUTPUT_X);
         mOutputY = extras.getInt(OUTPUT_Y);
         mScale = extras.getBoolean(SCALE, true);
         mScaleUp = extras.getBoolean(SCALE_UP_IF_NEEDED, true);
+
+
 
         // Make UI fullscreen.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -481,7 +499,7 @@ public class CropImage extends MonitoredActivity {
             int midX = (int) midPoint.x;
             int midY = (int) midPoint.y;
 
-            HighlightView hv = new HighlightView(mImageView);
+            HighlightView hv = new HighlightView(mImageView, mPickRectSize);
 
             int width = mBitmap.getWidth();
             int height = mBitmap.getHeight();
@@ -517,7 +535,7 @@ public class CropImage extends MonitoredActivity {
         // Create a default HightlightView if we found no face in the picture.
         private void makeDefault() {
 
-            HighlightView hv = new HighlightView(mImageView);
+            HighlightView hv = new HighlightView(mImageView, mPickRectSize);
 
             int width = mBitmap.getWidth();
             int height = mBitmap.getHeight();
@@ -551,7 +569,7 @@ public class CropImage extends MonitoredActivity {
         // Scale the image down for faster face detection.
         private Bitmap prepareBitmap() {
 
-            // TODO: Bitmap should not be null here - please corect
+            // TODO: Bitmap should not be null here - please correct
             if (mBitmap == null) {
                 return null;
             }

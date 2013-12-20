@@ -29,13 +29,14 @@ import android.util.Log;
 import android.view.View;
 
 // This class is used by CropImage to display a highlighted cropping rectangle
-// overlayed with the image. There are two coordinate spaces in use. One is
+// overlaid with the image. There are two coordinate spaces in use. One is
 // image, another is screen. computeLayout() uses mMatrix to map from image
 // space to screen space.
 class HighlightView {
 
     @SuppressWarnings("unused")
-    private static final String TAG = "HighlightView";
+    private static final String TAG = HighlightView.class.getSimpleName();
+    private final float mPickRectSize;
     View mContext;  // The View displaying the image.
 
     public static final int GROW_NONE        = (1 << 0);
@@ -45,13 +46,12 @@ class HighlightView {
     public static final int GROW_BOTTOM_EDGE = (1 << 4);
     public static final int MOVE             = (1 << 5);
 
-    public HighlightView(View ctx) {
-
+    public HighlightView(View ctx, float pickRectSize) {
         mContext = ctx;
+        mPickRectSize = pickRectSize;
     }
 
     private void init() {
-
         android.content.res.Resources resources = mContext.getResources();
         mResizeDrawableWidth =
                 resources.getDrawable(R.drawable.camera_crop_width);
@@ -64,12 +64,8 @@ class HighlightView {
     boolean mIsFocused;
     boolean mHidden;
 
-    public boolean hasFocus() {
-
-        return mIsFocused;
-    }
-
-    public void setFocus(boolean f) {
+    public boolean hasFocus()          { return mIsFocused; }
+    public void    setFocus(boolean f) {
 
         mIsFocused = f;
     }
@@ -80,7 +76,6 @@ class HighlightView {
     }
 
     protected void draw(Canvas canvas) {
-
         if (mHidden) {
             return;
         }
@@ -362,16 +357,15 @@ class HighlightView {
 
         r.inset(-dx, -dy);
 
-        /// Det är här vi skall mickla med storleken
-        final int minPixels= 640;
-        final float minDelta = Math.max (0, r.width() - minPixels);
-        Log.d(TAG, "minDelta: " + minDelta);
 
-        final float widthCap = 640; // Min Cropping rectangle size;
-        Log.d(TAG, "widthCap: " + widthCap);
+        // Don't let the cropping rectangle shrink too fast.
+
+        // final float widthCap = 25F;
+        final float widthCap = mPickRectSize; // Actually this is the min rect size
         if (r.width() < widthCap) {
             r.inset(-(widthCap - r.width()) / 2F, 0F);
         }
+
         float heightCap = mMaintainAspectRatio
                 ? (widthCap / mInitialAspectRatio)
                 : widthCap;
@@ -398,14 +392,12 @@ class HighlightView {
 
     // Returns the cropping rectangle in image space.
     public Rect getCropRect() {
-
         return new Rect((int) mCropRect.left, (int) mCropRect.top,
                 (int) mCropRect.right, (int) mCropRect.bottom);
     }
 
     // Maps the cropping rectangle from image space to screen space.
     private Rect computeLayout() {
-
         RectF r = new RectF(mCropRect.left, mCropRect.top,
                 mCropRect.right, mCropRect.bottom);
         mMatrix.mapRect(r);
@@ -414,13 +406,11 @@ class HighlightView {
     }
 
     public void invalidate() {
-
         mDrawRect = computeLayout();
     }
 
     public void setup(Matrix m, Rect imageRect, RectF cropRect, boolean circle,
                       boolean maintainAspectRatio) {
-
         if (circle) {
             maintainAspectRatio = true;
         }
